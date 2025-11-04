@@ -1,0 +1,22 @@
+body {
+    margin: 30px;
+}
+.row {
+font-size: 20px;
+}
+.col {
+    display: inline-block;
+    padding: 30px;
+    width: 25%;
+    height: 300px;
+    box-sizing: border-box;
+    background-color: darkseagreen;
+    font-size: 30px;
+    border-radius: 20px;
+    margin: 30px;
+    text-align: center;
+    line-height: 200px;
+}
+.col:nth-child(2n) {
+    background-color: burlywood;
+}
