@@ -1,8 +1,8 @@
 body {
-    margin: 30px;
+    margin: 0;
 }
 .row {
-font-size: 20px;
+font-size: 0;
 }
 .col {
     display: inline-block;
@@ -11,12 +11,8 @@ font-size: 20px;
     height: 300px;
     box-sizing: border-box;
     background-color: darkseagreen;
-    font-size: 30px;
-    border-radius: 20px;
-    margin: 30px;
-    text-align: center;
-    line-height: 200px;
+    font-size: 16px;
 }
-.col:nth-child(2n) {
-    background-color: burlywood;
+.col:not(:last-child) {
+    background-color: pink;
 }
