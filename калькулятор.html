@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .calculator {
+            background: #2c3e50;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .display {
+            background: #34495e;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        #result {
+            width: 100%;
+            border: none;
+            background: none;
+            color: white;
+            font-size: 2em;
+            text-align: right;
+            outline: none;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #34495e;
+            color: white;
+        }
+
+        button:hover {
+            background: #4a6278;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .operator {
+            background: #e74c3c;
+        }
+
+        .operator:hover {
+            background: #c0392b;
+        }
+
+        .equals {
+            background: #27ae60;
+            grid-column: span 2;
+        }
+
+        .equals:hover {
+            background: #219653;
+        }
+
+        .clear {
+            background: #f39c12;
+        }
+
+        .clear:hover {
+            background: #d35400;
+        }
+
+        .function {
+            background: #9b59b6;
+        }
+
+        .function:hover {
+            background: #8e44ad;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display">
+            <input type="text" id="result" value="0">
+        </div>
+        <div class="buttons">
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button onclick="deleteLast()">⌫</button>
+            <button class="operator" onclick="appendOperator('/')">/</button>
+            <button class="operator" onclick="appendOperator('*')">×</button>
+            
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="appendOperator('-')">-</button>
+            
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button class="operator" onclick="appendOperator('+')">+</button>
+            
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button class="function" onclick="calculateSquareRoot()">√</button>
+            <button class="equals" onclick="calculate()">=</button>
+            
+            <button onclick="appendNumber('0')">0</button>
+            <button onclick="appendNumber('.')">.</button>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('result');
+        let currentInput = '0';
+        let shouldResetDisplay = false;
+
+        function updateDisplay() {
+            display.value = currentInput;
+        }
+
+        function appendNumber(num) {
+            if (currentInput === '0' || shouldResetDisplay) {
+                currentInput = num;
+                shouldResetDisplay = false;
+            } else {
+                currentInput += num;
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(operator) {
+            if (shouldResetDisplay) {
+                shouldResetDisplay = false;
+            }
+            currentInput += operator;
+            updateDisplay();
+        }
+
+        function calculateSquareRoot() {
+            try {
+                // Если ввод пустой или 0, берем последнее число или вычисляем текущее выражение
+                let numberToCalculate;
+                
+                if (currentInput === '0' || currentInput === '') {
+                    numberToCalculate = 0;
+                } else {
+                    // Пытаемся вычислить текущее выражение чтобы получить число для корня
+                    let expression = currentInput.replace('×', '*');
+                    numberToCalculate = eval(expression);
+                }
+                
+                // Проверяем, что число не отрицательное
+                if (numberToCalculate < 0) {
+                    currentInput = 'Ошибка';
+                } else {
+                    let result = Math.sqrt(numberToCalculate);
+                    
+                    // Проверка на корректность результата
+                    if (!isFinite(result)) {
+                        throw new Error('Некорректный ввод');
+                    }
+                    
+                    currentInput = result.toString();
+                    shouldResetDisplay = true;
+                }
+                updateDisplay();
+            } catch (error) {
+                currentInput = 'Ошибка';
+                shouldResetDisplay = true;
+                updateDisplay();
+            }
+        }
+
+        function calculate() {
+            try {
+                // Заменяем × на * для вычисления
+                let expression = currentInput.replace('×', '*');
+                let result = eval(expression);
+                
+                // Проверка на деление на ноль
+                if (!isFinite(result)) {
+                    throw new Error('Деление на ноль');
+                }
+                
+                currentInput = result.toString();
+                shouldResetDisplay = true;
+                updateDisplay();
+            } catch (error) {
+                currentInput = 'Ошибка';
+                shouldResetDisplay = true;
+                updateDisplay();
+            }
+        }
+
+        function clearDisplay() {
+            currentInput = '0';
+            shouldResetDisplay = false;
+            updateDisplay();
+        }
+
+        function deleteLast() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        // Обработка клавиатуры
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            
+            if (/[0-9]/.test(key)) {
+                appendNumber(key);
+            } else if (['+', '-', '*', '/'].includes(key)) {
+                appendOperator(key);
+            } else if (key === 'Enter' || key === '=') {
+                event.preventDefault();
+                calculate();
+            } else if (key === 'Escape' || key === 'c' || key === 'C') {
+                clearDisplay();
+            } else if (key === 'Backspace') {
+                deleteLast();
+            } else if (key === '.') {
+                appendNumber('.');
+            }
+        });
+    </script>
+</body>
+</html>
